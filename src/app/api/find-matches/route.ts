@@ -1,4 +1,4 @@
-// eslint-disable @typescript-eslint/no-explicit-any
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
@@ -101,7 +101,7 @@ export async function GET() {
       arrivalTime: string;
       terminal: any;
       luggage: any;
-      contact: any
+      contact: any;
     }[] = [];
 
     response.data.valueRanges?.forEach((rangeResult, index) => {
