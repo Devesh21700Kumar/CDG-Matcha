@@ -3,10 +3,10 @@
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
 import { differenceInMinutes, isValid, format } from "date-fns";
+import { parse } from "date-fns";
 
 /**
  * The "Deconstructor" Parser. It doesn't guess formats. It rebuilds the date from scratch.
- * This is the final, definitive parser.
  */
 function godTierDateParser(
   dateCol: string,
@@ -66,7 +66,6 @@ function godTierDateParser(
 
     return isValid(finalDate) ? finalDate : null;
   } catch (e) {
-    console.error("CRITICAL PARSER CRASH on:", `"${dateCol} ${timeCol}"`, e);
     return null;
   }
 }
@@ -77,18 +76,20 @@ const sheets = google.sheets({
   auth: process.env.GOOGLE_API_KEY,
 });
 const tabNames = ["Arrival before 25th August", "Arrival on/after 25th August"];
-const ranges = tabNames.map((name) => `'${name}'!A:H`);
+// LOGIC UPGRADE: Fetch one more column to include the new data (A to I)
+const ranges = tabNames.map((name) => `'${name}'!A:I`);
+
+// LOGIC UPGRADE: Column indices have shifted! This is critical.
 const DATE_COL = 0,
   NAME_COL = 1,
   TIME_COL = 2,
-  TERMINAL_COL = 3,
-  CONTACT_COL = 4,
-  SHARE_COL = 5,
-  LUGGAGE_COL = 7;
+  AIRPORT_COL = 3,
+  TERMINAL_COL = 4,
+  CONTACT_COL = 5,
+  SHARE_COL = 6,
+  LUGGAGE_COL = 8;
 
-// --- API Endpoints ---
-
-// GET: Fetches ALL entries for the "View All" tab
+// --- GET Endpoint: Fetches ALL entries for the "View All" tab ---
 export async function GET() {
   try {
     const response = await sheets.spreadsheets.values.batchGet({
@@ -96,12 +97,8 @@ export async function GET() {
       ranges,
     });
     const allEntries: {
-      date: any;
-      name: any;
-      arrivalTime: string;
-      terminal: any;
-      luggage: any;
-      contact: any;
+        date: any; name: any; arrivalTime: string; location: any; // Add the new location field
+        terminal: any; luggage: any;
     }[] = [];
 
     response.data.valueRanges?.forEach((rangeResult, index) => {
@@ -122,16 +119,15 @@ export async function GET() {
           date: row[DATE_COL] || "N/A",
           name: (row[NAME_COL] || "").trim() || "Name not specified",
           arrivalTime: arrivalDate ? format(arrivalDate, "p") : "N/A",
+          location: (row[AIRPORT_COL] || "").trim(), // Add the new location field
           terminal: (row[TERMINAL_COL] || "").trim(),
           luggage: (row[LUGGAGE_COL] || "").trim() || "Not specified",
-          contact: (row[CONTACT_COL] || "").trim() || "Not specified",
         });
       }
     });
 
     return NextResponse.json({ entries: allEntries });
   } catch (error) {
-    console.error("GET ALL ERROR:", error);
     return NextResponse.json(
       { error: "Failed to fetch full list." },
       { status: 500 }
@@ -139,10 +135,11 @@ export async function GET() {
   }
 }
 
-// POST: Performs a server-side search for matches
+// --- POST Endpoint: Performs a server-side search for matches ---
 export async function POST(request: Request) {
   try {
-    const { date, time, terminal } = await request.json();
+    // LOGIC UPGRADE: Destructure the new `location` field from the request
+    const { date, time, location, terminal } = await request.json();
     const userInputDateTime = new Date(`${date}T${time}`);
     if (!isValid(userInputDateTime))
       return NextResponse.json(
@@ -155,11 +152,8 @@ export async function POST(request: Request) {
       ranges,
     });
     const potentialMatches: {
-      name: any;
-      arrivalTime: string;
-      terminal: any;
-      contact: any;
-      luggage: any;
+        name: any; arrivalTime: string; location: any; // Include location in match data
+        terminal: any; contact: any; luggage: any;
     }[] = [];
 
     response.data.valueRanges?.forEach((rangeResult, index) => {
@@ -170,8 +164,11 @@ export async function POST(request: Request) {
           continue;
 
         const sharePref = (row[SHARE_COL] || "").toLowerCase();
-        const terminalFromSheet = (row[TERMINAL_COL] || "").trim();
-        if (sharePref === "no" || !terminalFromSheet) continue;
+        const locationFromSheet = (row[AIRPORT_COL] || "").trim();
+        if (sharePref === "no" || !locationFromSheet) continue;
+
+        // LOGIC UPGRADE: Primary filter is now LOCATION
+        if (locationFromSheet !== location) continue;
 
         const sheetArrivalDate = godTierDateParser(
           row[DATE_COL],
@@ -180,21 +177,40 @@ export async function POST(request: Request) {
         );
         if (!sheetArrivalDate) continue;
 
-        const normalizedSheetTerminal = terminalFromSheet
-          .toLowerCase()
-          .replace("t", "");
-        const normalizedUserTerminal = terminal.toLowerCase().replace("t", "");
-        const isSameTerminal =
-          normalizedSheetTerminal === normalizedUserTerminal;
         const timeDifference = Math.abs(
           differenceInMinutes(userInputDateTime, sheetArrivalDate)
         );
 
-        if (isSameTerminal && timeDifference <= 90) {
+        // LOGIC UPGRADE: Terminal check is now secondary and more intelligent
+        let isMatch = false;
+        const isAirport = location.toLowerCase().includes("airport");
+
+        if (isAirport) {
+          const terminalFromSheet = (row[TERMINAL_COL] || "").trim();
+          const normalizedSheetTerminal = terminalFromSheet
+            .toLowerCase()
+            .replace("t", "");
+          const normalizedUserTerminal = terminal
+            .toLowerCase()
+            .replace("t", "");
+          if (
+            timeDifference <= 90
+          ) {
+            isMatch = true;
+          }
+        } else {
+          // For train stations, we don't need a terminal match
+          if (timeDifference <= 90) {
+            isMatch = true;
+          }
+        }
+
+        if (isMatch) {
           potentialMatches.push({
             name: (row[NAME_COL] || "").trim() || "Name not specified",
             arrivalTime: format(sheetArrivalDate, "p"),
-            terminal: terminalFromSheet,
+            location: locationFromSheet, // Include location in match data
+            terminal: (row[TERMINAL_COL] || "").trim(),
             contact: (row[CONTACT_COL] || "").trim(),
             luggage: (row[LUGGAGE_COL] || "").trim() || "Not specified",
           });
@@ -204,7 +220,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ matches: potentialMatches });
   } catch (error) {
-    console.error("POST SEARCH ERROR:", error);
     return NextResponse.json(
       { error: "Failed to perform search." },
       { status: 500 }

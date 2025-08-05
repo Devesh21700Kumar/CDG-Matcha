@@ -253,3 +253,20 @@
     padding: 2rem 1.5rem;
   }
 }
+
+.inputGroup select {
+  padding: 0.8rem 1rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  min-width: 180px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  color: #1a202c;
+  background-color: #fff; /* Ensure select has a white background */
+}
+
+.inputGroup select:focus {
+  outline: none;
+  border-color: #00a9a5;
+  box-shadow: 0 0 0 3px rgba(0, 169, 165, 0.2);
+}

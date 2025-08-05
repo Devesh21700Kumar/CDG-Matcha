@@ -8,6 +8,8 @@ export default function Home() {
   // --- STATE MANAGEMENT ---
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+  // LOGIC UPGRADE: Add state for the new location and terminal fields
+  const [location, setLocation] = useState("CDG Airport"); // Default to the most common option
   const [terminal, setTerminal] = useState("");
 
   const [matches, setMatches] = useState<Match[]>([]);
@@ -20,12 +22,12 @@ export default function Home() {
   const [listError, setListError] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<"search" | "all">("search");
 
-  // --- DATA FETCHING (GET on load, POST on search) ---
+  // Data fetching (GET on load)
   useEffect(() => {
     const fetchAllEntries = async () => {
       setIsListLoading(true);
       try {
-        const response = await fetch("/api/find-matches"); // GET request
+        const response = await fetch("/api/find-matches");
         const data = await response.json();
         if (!response.ok)
           throw new Error(data.error || "Could not fetch the list.");
@@ -39,6 +41,7 @@ export default function Home() {
     fetchAllEntries();
   }, []);
 
+  // Handle the search form submission
   const handleSearchSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -49,7 +52,8 @@ export default function Home() {
       const response = await fetch("/api/find-matches", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date, time, terminal }),
+        // LOGIC UPGRADE: Send the new `location` field in the payload
+        body: JSON.stringify({ date, time, location, terminal }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Search failed.");
@@ -61,10 +65,12 @@ export default function Home() {
     }
   };
 
+  const isTerminalRequired = location.toLowerCase().includes("airport");
+
   return (
     <main className={styles.main}>
       <div className={styles.hero}>
-        <h1 className={styles.title}>Find Your Airport Cab Share</h1>
+        <h1 className={styles.title}>Find Your Airport & Station Cab Share</h1>
         <p className={styles.description}>
           Search for a match or view all available entries from the community
           sheet.
@@ -111,17 +117,40 @@ export default function Home() {
                 required
               />
             </div>
+
+            {/* --- NEW UI: Location Dropdown --- */}
             <div className={styles.inputGroup}>
-              <label htmlFor="terminal">Terminal</label>
-              <input
-                type="text"
-                id="terminal"
-                placeholder="e.g., 2E, T1"
-                value={terminal}
-                onChange={(e) => setTerminal(e.target.value)}
+              <label htmlFor="location">Airport / Station</label>
+              <select
+                id="location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
                 required
-              />
+              >
+                <option value="CDG Airport">CDG Airport</option>
+                <option value="Orly Airport">Orly Airport</option>
+                <option value="Versailles-Chantiers train station">
+                  Versailles-Chantiers
+                </option>
+                <option value="Gare du Nord train station">Gare du Nord</option>
+              </select>
             </div>
+
+            {/* --- NEW UI: Conditionally show Terminal input --- */}
+            {isTerminalRequired && (
+              <div className={styles.inputGroup}>
+                <label htmlFor="terminal">Terminal</label>
+                <input
+                  type="text"
+                  id="terminal"
+                  placeholder="e.g., 2E, T1"
+                  value={terminal}
+                  onChange={(e) => setTerminal(e.target.value)}
+                  required={isTerminalRequired}
+                />
+              </div>
+            )}
+
             <button
               type="submit"
               className={styles.button}
@@ -153,11 +182,16 @@ export default function Home() {
                 <li key={index} className={styles.matchCard}>
                   <h3>{match.name}</h3>
                   <p>
-                    <strong>Arrives at:</strong> {match.arrivalTime}
+                    <strong>Location:</strong> {match.location}
                   </p>
                   <p>
-                    <strong>Terminal:</strong> {match.terminal}
+                    <strong>Arrives at:</strong> {match.arrivalTime}
                   </p>
+                  {match.terminal && (
+                    <p>
+                      <strong>Terminal:</strong> {match.terminal}
+                    </p>
+                  )}
                   <p>
                     <strong>Luggage:</strong> {match.luggage}
                   </p>
@@ -194,7 +228,8 @@ export default function Home() {
               <th>Date</th>
               <th>Name</th>
               <th>Arrival Time</th>
-              <th>Contact</th>
+              {/* --- NEW UI: Add Location to table header --- */}
+              <th>Location</th>
               <th>Terminal</th>
               <th>Luggage</th>
             </tr>
@@ -205,7 +240,8 @@ export default function Home() {
                 <td>{entry.date}</td>
                 <td>{entry.name}</td>
                 <td>{entry.arrivalTime}</td>
-                <td>{entry.contact}</td>
+                {/* --- NEW UI: Add Location to table body --- */}
+                <td>{entry.location}</td>
                 <td>{entry.terminal}</td>
                 <td>{entry.luggage}</td>
               </tr>
