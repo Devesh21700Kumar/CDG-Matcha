@@ -4,7 +4,6 @@
 import { useState, useEffect, FormEvent } from "react";
 import styles from "./page.module.css";
 
-
 export default function Home() {
   // --- STATE MANAGEMENT ---
   const [date, setDate] = useState("");
@@ -198,7 +197,6 @@ export default function Home() {
               <th>Contact</th>
               <th>Terminal</th>
               <th>Luggage</th>
-              
             </tr>
           </thead>
           <tbody>
@@ -210,7 +208,6 @@ export default function Home() {
                 <td>{entry.contact}</td>
                 <td>{entry.terminal}</td>
                 <td>{entry.luggage}</td>
-                
               </tr>
             ))}
           </tbody>
