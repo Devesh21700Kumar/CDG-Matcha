@@ -1,4 +1,4 @@
-// src/app/page.tsx
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 "use client";
 
 import { useState, useEffect, FormEvent } from "react";
