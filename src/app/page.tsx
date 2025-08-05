@@ -195,8 +195,10 @@ export default function Home() {
               <th>Date</th>
               <th>Name</th>
               <th>Arrival Time</th>
+              <th>Contact</th>
               <th>Terminal</th>
               <th>Luggage</th>
+              
             </tr>
           </thead>
           <tbody>
@@ -205,8 +207,10 @@ export default function Home() {
                 <td>{entry.date}</td>
                 <td>{entry.name}</td>
                 <td>{entry.arrivalTime}</td>
+                <td>{entry.contact}</td>
                 <td>{entry.terminal}</td>
                 <td>{entry.luggage}</td>
+                
               </tr>
             ))}
           </tbody>

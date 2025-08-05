@@ -1,4 +1,3 @@
-// Define the data structures
 interface Match {
     name: string;
     arrivalTime: string;
@@ -8,6 +7,7 @@ interface Match {
   }
   
   interface AllEntriesData {
+    contact: string;
     date: string;
     name: string;
     arrivalTime: string;

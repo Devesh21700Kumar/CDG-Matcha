@@ -101,6 +101,7 @@ export async function GET() {
       arrivalTime: string;
       terminal: any;
       luggage: any;
+      contact: any
     }[] = [];
 
     response.data.valueRanges?.forEach((rangeResult, index) => {
@@ -123,6 +124,7 @@ export async function GET() {
           arrivalTime: arrivalDate ? format(arrivalDate, "p") : "N/A",
           terminal: (row[TERMINAL_COL] || "").trim(),
           luggage: (row[LUGGAGE_COL] || "").trim() || "Not specified",
+          contact: (row[CONTACT_COL] || "").trim() || "Not specified",
         });
       }
     });
