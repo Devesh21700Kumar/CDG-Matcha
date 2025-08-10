@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
 import { differenceInMinutes, isValid, format } from "date-fns";
-import { parse } from "date-fns";
 
 /**
  * The "Ultimate Crazy Date Parser" - Handles all the wild date formats from the spreadsheet
@@ -152,7 +152,7 @@ function godTierDateParser(
     const finalDate = new Date(year, month, day, hour, minute);
 
     return isValid(finalDate) ? finalDate : null;
-  } catch (e) {
+  } catch (e: any) {
     return null;
   }
 }
