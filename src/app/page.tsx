@@ -71,10 +71,6 @@ export default function Home() {
     <main className={styles.main}>
       <div className={styles.hero}>
         <h1 className={styles.title}>Find Your Airport & Station Cab Share</h1>
-        <p className={styles.description}>
-          Search for a match or view all available entries from the community
-          sheet.
-        </p>
       </div>
       <div className={styles.tabsContainer}>
         <button

@@ -43,6 +43,8 @@
 .inputGroup {
   display: flex;
   flex-direction: column;
+  min-width: 180px;
+  flex: 1;
 }
 .inputGroup label {
   margin-bottom: 0.5rem;
@@ -55,7 +57,7 @@
   border: 1px solid #cbd5e0;
   border-radius: 8px;
   font-size: 1rem;
-  min-width: 180px;
+  width: 100%;
   transition: border-color 0.2s, box-shadow 0.2s;
   color: #1a202c;
 }
@@ -74,6 +76,8 @@
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s, transform 0.1s;
+  min-width: 180px;
+  align-self: flex-end;
 }
 .button:hover {
   background-color: #008781;
@@ -219,10 +223,12 @@
 .table td {
   padding: 1rem;
   border-bottom: 1px solid #e2e8f0;
-  white-space: nowrap;
+  word-wrap: break-word;
+  max-width: 200px;
 }
 .table td {
   color: #2d3748;
+  white-space: normal;
 }
 .table th {
   font-size: 0.8rem;
@@ -230,6 +236,7 @@
   color: #4a5568;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 .table tbody tr:nth-child(even) {
   background-color: #f7fafc;
@@ -237,6 +244,24 @@
 .table tbody tr:hover {
   background-color: #edf2f7;
 }
+
+.inputGroup select {
+  padding: 0.8rem 1rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  color: #1a202c;
+  background-color: #fff;
+}
+
+.inputGroup select:focus {
+  outline: none;
+  border-color: #00a9a5;
+  box-shadow: 0 0 0 3px rgba(0, 169, 165, 0.2);
+}
+
 @media (max-width: 768px) {
   .main {
     padding: 2rem 1rem;
@@ -251,22 +276,21 @@
     flex-direction: column;
     align-items: stretch;
     padding: 2rem 1.5rem;
+    gap: 1rem;
   }
-}
-
-.inputGroup select {
-  padding: 0.8rem 1rem;
-  border: 1px solid #cbd5e0;
-  border-radius: 8px;
-  font-size: 1rem;
-  min-width: 180px;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  color: #1a202c;
-  background-color: #fff; /* Ensure select has a white background */
-}
-
-.inputGroup select:focus {
-  outline: none;
-  border-color: #00a9a5;
-  box-shadow: 0 0 0 3px rgba(0, 169, 165, 0.2);
+  .inputGroup {
+    min-width: auto;
+  }
+  .button {
+    align-self: stretch;
+    min-width: auto;
+  }
+  .table th,
+  .table td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.9rem;
+  }
+  .table th {
+    font-size: 0.75rem;
+  }
 }
