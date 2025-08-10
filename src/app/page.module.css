@@ -262,6 +262,50 @@
   box-shadow: 0 0 0 3px rgba(0, 169, 165, 0.2);
 }
 
+.dataSourceInfo {
+  width: 100%;
+  max-width: 700px;
+  margin-bottom: 2rem;
+}
+
+.infoCard {
+  background: #f0f9ff;
+  border: 1px solid #0ea5e9;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.infoCard h3 {
+  color: #0c4a6e;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.infoCard p {
+  color: #0369a1;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.sheetsLink {
+  display: inline-block;
+  background: #0ea5e9;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.2s, transform 0.1s;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.sheetsLink:hover {
+  background: #0284c7;
+  transform: translateY(-2px);
+}
+
 @media (max-width: 768px) {
   .main {
     padding: 2rem 1rem;
@@ -292,5 +336,18 @@
   }
   .table th {
     font-size: 0.75rem;
+  }
+
+  .infoCard {
+    padding: 1rem;
+  }
+
+  .infoCard h3 {
+    font-size: 1.1rem;
+  }
+
+  .sheetsLink {
+    padding: 0.7rem 1.2rem;
+    font-size: 0.9rem;
   }
 }
