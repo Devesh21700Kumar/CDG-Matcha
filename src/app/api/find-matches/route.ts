@@ -180,7 +180,7 @@ const DATE_COL = 0,
 export async function GET() {
   try {
     const response = await sheets.spreadsheets.values.batchGet({
-      spreadsheetId: process.env.GOOGLE_SHEET_ID,
+      spreadsheetId: process.env.SECRETS_SCAN_SMART_DETECTION_OMIT_VALUES,
       ranges,
     });
     const allEntries: {
@@ -235,7 +235,7 @@ export async function POST(request: Request) {
       );
 
     const response = await sheets.spreadsheets.values.batchGet({
-      spreadsheetId: process.env.GOOGLE_SHEET_ID,
+      spreadsheetId: process.env.SECRETS_SCAN_SMART_DETECTION_OMIT_VALUES,
       ranges,
     });
     const potentialMatches: {

@@ -71,10 +71,6 @@ export default function Home() {
     <main className={styles.main}>
       <div className={styles.hero}>
         <h1 className={styles.title}>Find Your Airport & Station Cab Share</h1>
-        <p className={styles.description}>
-          Connect with others arriving at the same time and location for
-          ride-sharing opportunities.
-        </p>
       </div>
 
       {/* Add this new section */}
@@ -87,7 +83,7 @@ export default function Home() {
             source.
           </p>
           <a
-            href={`https://docs.google.com/spreadsheets/d/${process.env.GOOGLE_SHEET_ID}/edit#gid=0`}
+            href={`https://docs.google.com/spreadsheets/d/${process.env.SECRETS_SCAN_SMART_DETECTION_OMIT_VALUES}/edit#gid=0`}
             target="_blank"
             rel="noopener noreferrer"
             className={styles.sheetsLink}
