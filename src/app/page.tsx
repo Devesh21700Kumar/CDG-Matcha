@@ -72,21 +72,23 @@ export default function Home() {
       <div className={styles.hero}>
         <h1 className={styles.title}>Find Your Airport & Station Cab Share</h1>
         <p className={styles.description}>
-          Connect with others arriving at the same time and location for ride-sharing opportunities.
+          Connect with others arriving at the same time and location for
+          ride-sharing opportunities.
         </p>
       </div>
-      
+
       {/* Add this new section */}
       <div className={styles.dataSourceInfo}>
         <div className={styles.infoCard}>
           <h3>📋 How to Add Your Details</h3>
           <p>
-            This platform uses data from a shared Google Sheets document. To help others find you, 
-            please add your arrival details to our data source.
+            This platform uses data from a shared Google Sheets document. To
+            help others find you, please add your arrival details to our data
+            source.
           </p>
-          <a 
-            href="https://docs.google.com/spreadsheets/d/15AX8HDyYRu1w-Gi2FgzeSX_EmibsHREYuZXhZCVxpyk/edit?gid=0#gid=0" 
-            target="_blank" 
+          <a
+            href={`https://docs.google.com/spreadsheets/d/${process.env.GOOGLE_SHEET_ID}/edit#gid=0`}
+            target="_blank"
             rel="noopener noreferrer"
             className={styles.sheetsLink}
           >
